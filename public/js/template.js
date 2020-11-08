@@ -1,4 +1,20 @@
 $(document).ready(function() {
+  $("#sendFeedback").click(function(){
+    setTimeout(function(){
+      $("#feedback .close").click()
+    }, 1000);
+  });
+});
+
+$(document).ready(function() {
+  $("#editAccount").click(function(){
+    setTimeout(function(){
+      $("#editAccount .close").click()
+    }, 1000);
+  });
+});
+
+$(document).ready(function() {
    $('#menu_icon').click(function() {
       if ($('.page-sidebar').hasClass('expandit')){
           $('.page-sidebar').addClass('collapseit');

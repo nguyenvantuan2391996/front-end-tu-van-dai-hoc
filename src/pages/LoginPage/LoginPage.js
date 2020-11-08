@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
+import swal from 'sweetalert';
 
 class LoginPage extends Component {
   
@@ -42,25 +43,29 @@ class LoginPage extends Component {
       }
       
     }).then(res => {
-      localStorage.setItem('access_token', res.data.access_token);
-      localStorage.setItem('refresh_token', res.data.refresh_token);
-      localStorage.setItem('role', res.data.role);
-      localStorage.setItem('id', res.data.id);
-      localStorage.setItem('language_id', res.data.languageId);
-      localStorage.setItem('name', res.data.name);
-      localStorage.setItem('address', res.data.address);
+      if (res.data.status === "0") {
+        swal("Fail !", "Account is locked. Please contact to admin system !", "error");
+      } else {
+        localStorage.setItem('access_token', res.data.access_token);
+        localStorage.setItem('refresh_token', res.data.refresh_token);
+        localStorage.setItem('role', res.data.role);
+        localStorage.setItem('id', res.data.id);
+        localStorage.setItem('language_id', res.data.languageId);
+        localStorage.setItem('name', res.data.name);
+        localStorage.setItem('address', res.data.address);
 
-      this.setState({
-        access_token : res.data.access_token
-      });
-      this.setState({
-        refresh_token : res.data.refresh_token
-      });
-      this.setState({
-        role : res.data.role
-      });
+        this.setState({
+          access_token : res.data.access_token
+        });
+        this.setState({
+          refresh_token : res.data.refresh_token
+        });
+        this.setState({
+          role : res.data.role
+        });
+      }
     }).catch(err => {
-      alert(err.response.data.message);
+      swal("Fail !", err.response.data.message + " !", "error");
     });
   }
 
@@ -82,12 +87,12 @@ class LoginPage extends Component {
         }
 
       }).then(res => {
-        alert("Account is registered successfully");
+        swal("Success !", "Account is registered successfully !", "success");
       }).catch(err => {
-        alert(err.response.data.message);
+        swal("Fail !", err.response.data.message + " !", "error");
       });
     } else {
-      alert("Password isn't as same as confirm password");
+      swal("Fail !", "Password isn't as same as confirm password !", "error");
     }
   }
 
