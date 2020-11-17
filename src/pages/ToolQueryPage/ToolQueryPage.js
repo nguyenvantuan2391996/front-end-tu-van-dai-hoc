@@ -66,12 +66,15 @@ class ToolQueryPage extends Component {
 	submitQuery = (e) => {
 		e.preventDefault();
 		var {queryValue, countRecord} = this.state;
+		if (queryValue.toUpperCase().includes("SELECT")) {
+			queryValue = queryValue.toUpperCase().replace("SELECT", "SELECT TOP " + countRecord);
+		}
 
 		axios({
 			method: 'POST',
 			url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/toolquery',
 			data: {
-				querySql : queryValue.toUpperCase().replace("SELECT", "SELECT TOP " + countRecord)
+				querySql : queryValue
 			},
 			headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
 		}).then(res => {

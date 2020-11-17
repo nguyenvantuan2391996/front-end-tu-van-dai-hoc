@@ -1,10 +1,10 @@
-.container{max-width:1170px; margin:auto;}
+.container{max-width:1379px; margin:auto;}
 img{ max-width:100%;}
 .inbox_people {
   background: #f8f8f8 none repeat scroll 0 0;
   float: left;
   overflow: hidden;
-  width: 40%; border-right:1px solid #c4c4c4;
+  width: 30%; border-right:1px solid #c4c4c4;
 }
 .inbox_msg {
   border: 1px solid #c4c4c4;
@@ -89,7 +89,7 @@ img{ max-width:100%;}
 .mesgs {
   float: left;
   padding: 30px 15px 0 25px;
-  width: 60%;
+  width: 70%;
 }
 
  .sent_msg p {
@@ -133,3 +133,33 @@ img{ max-width:100%;}
   height: 516px;
   overflow-y: auto;
 }
+
+.card-header{
+  border-radius: 15px 15px 0 0 !important;
+  border-bottom: 0 !important;
+}
+
+.img_cont{
+  position: relative;
+  height: 60px;
+  width: 60px;
+  margin-left: 15px;
+}
+
+.user_info{
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 15px;
+  }
+
+.video_cam{
+    margin-left: 50px;
+    margin-top: 5px;
+  }
+
+.video_cam span{
+    color: #3366FF;
+    font-size: 28px;
+    cursor: pointer;
+    margin-right: 20px;
+  }
