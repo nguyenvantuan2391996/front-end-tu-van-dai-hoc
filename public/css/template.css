@@ -1,3 +1,32 @@
+#resultTable th, td {
+  white-space: nowrap;
+}
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before {
+  bottom: .5em;
+}
+
+.setWidth {
+  max-width: 100px;
+}
+
+.concat div {
+  overflow: hidden;
+  -ms-text-overflow : ellipsis;
+  -o-text-overflow : ellipsis;
+  text-overflow : ellipsis;
+  white-space: nowrap;
+  width: inherit;
+}
+
 .modal-backdrop {
   z-index: 100000 !important;
 }
@@ -425,7 +454,7 @@ li.profile img {
     margin-right: 0px;
 }
 .main-wrapper {
-    margin-top: 60px;
+    margin-top: 50px;
     display: inline-block;
     width: 100%;
     padding: 15px 15px 0 15px;

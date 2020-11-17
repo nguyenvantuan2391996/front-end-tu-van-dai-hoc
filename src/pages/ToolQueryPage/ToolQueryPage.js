@@ -3,15 +3,19 @@ import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import swal from '@sweetalert/with-react';
 
-class FeedbackPage extends Component {
+class ToolQueryPage extends Component {
 	constructor(props){
 		super(props);
 		this.state = {
 			message : '',
 			role : '1',
-			listFeedback : []
+			queryValue : '',
+			countRecord : '50',
+			listResult : [],
+			listKeyName : []
 		};
 	}
+
 	onChange = (e) => {
 		var target = e.target;
 		var name = target.name;
@@ -47,7 +51,7 @@ class FeedbackPage extends Component {
 						role : localStorage.getItem('role')
 					});
 					localStorage.clear();
-
+					
 					swal("Sign out success!", {
 						icon: "success",
 						timer: 2000
@@ -59,82 +63,38 @@ class FeedbackPage extends Component {
 		});
 	}
 
-	onDelete = (data) => {
-		swal({
-			title: "Are you sure ?",
-			text: "Feedback will be deleted !",
-			icon: "warning",
-			buttons: true,
-			dangerMode: true,
-		})
-		.then((willDelete) => {
-			if (willDelete) {
+	submitQuery = (e) => {
+		e.preventDefault();
+		var {queryValue, countRecord} = this.state;
 
-				axios({
-					method: 'DELETE',
-					url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/feedback',
-					data: {
-						id : data.id
-					},
-					headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
-				}).then(res => {
-					swal("Delete success!", {
-						icon: "success",
-						timer: 2000
-					});
-					this.getFeedback();
-				}).catch(err => {
-					if (err.response.status === 401) {
-						axios({
-							method: 'POST',
-							url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/login/refreshToken',
-							data: {
-								refresh_token: localStorage.getItem('refresh_token'),
-								token: localStorage.getItem('access_token')
-							}
-						}).then(res => {
-							localStorage.setItem('access_token', res.data.access_token);
-							localStorage.setItem('refresh_token', res.data.refresh_token);
+		axios({
+			method: 'POST',
+			url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/toolquery',
+			data: {
+				querySql : queryValue.toUpperCase().replace("SELECT", "SELECT TOP " + countRecord)
+			},
+			headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
+		}).then(res => {
+			if (res.data.length > 0) {
+				this.setState({
+					listKeyName : Object.keys(res.data[0])
+				});
+				this.setState({
+					listResult : res.data
+				});
 
-							axios({
-								method: 'DELETE',
-								url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/feedback',
-								data: {
-									id : data.id
-								},
-								headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
-							}).then(res => {
-								swal("Delete success!", {
-									icon: "success",
-									timer: 2000
-								});
-								this.getAccount();
-							}).catch(err => {
-								this.setState({
-									message : "signout"
-								});
-							});
-						});
-					}
+				swal("Success !", {
+					icon: "success",
+					timer: 2000
+				});
+			} else {
+				swal(res.data.message + " !", {
+					icon: "success",
+					timer: 2000
 				});
 			}
-		});
-	}
-
-	getFeedback() {
-		axios({
-			method: 'GET',
-			url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/feedback',
-			data: {
-				refresh_token: localStorage.getItem('refresh_token'),
-				token: localStorage.getItem('access_token')
-			}
-		}).then(res => {
-			this.setState({
-				listFeedback : res.data
-			});
 		}).catch(err => {
-			if (err.response.status === 404) {
+			if (err.response.status === 400) {
 				swal("Fail !", err.response.data.message + " !", "error");
 			}
 			else if (err.response.status === 401) {
@@ -150,16 +110,31 @@ class FeedbackPage extends Component {
 					localStorage.setItem('refresh_token', res.data.refresh_token);
 
 					axios({
-						method: 'GET',
-						url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/feedback',
+						method: 'POST',
+						url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/toolquery',
 						data: {
-							refresh_token: localStorage.getItem('refresh_token'),
-							token: localStorage.getItem('access_token')
-						}
+							querySql : queryValue.toUpperCase().replace("SELECT", "SELECT TOP " + countRecord)
+						},
+						headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
 					}).then(res => {
-						this.setState({
-							listFeedback : res.data
-						});
+						if (res.data.length > 0) {
+							this.setState({
+								listKeyName : Object.keys(res.data[0])
+							});
+							this.setState({
+								listResult : res.data
+							});
+
+							swal("Success !", {
+								icon: "success",
+								timer: 2000
+							});
+						} else {
+							swal(res.data.message + " !", {
+								icon: "success",
+								timer: 2000
+							});
+						}
 					}).catch(err => {
 						this.setState({
 							message : "signout"
@@ -171,8 +146,6 @@ class FeedbackPage extends Component {
 	}
 
 	componentDidMount () {
-		this.getFeedback();
-
 		if (localStorage.getItem('refresh_token') !== null && localStorage.getItem('access_token') !== null) {
 			axios({
 				method: 'POST',
@@ -198,11 +171,12 @@ class FeedbackPage extends Component {
 	}
 
 	render() {
-		var {listFeedback, message, role} = this.state;
+		var {listResult, listKeyName, message, role} = this.state;
 
 		if (message === "signout" || role !== "1") {
 			return <Redirect to="/" />
 		}
+
 		return (
 			<div>
 				<div className="page-topbar">
@@ -250,34 +224,60 @@ class FeedbackPage extends Component {
 									<table id="mytable" className="table table-bordred">
 										<thead className="thead-light">
 											<tr>
-												<th>Serial</th>
-												<th>Account Name</th>
-												<th>Name</th>
-												<th>Phone</th>
-												<th>Address</th>
-												<th>Content</th>
-												<th>Rating</th>
-												<th>Delete</th>
+												<th><i className="fa fa-search-plus" aria-hidden="true"></i>&nbsp;Run Query&emsp;&emsp;&emsp;Max Number of displayed rows&emsp;
+													<select name="countRecord" onChange={this.onChange}>
+														<option value="50">50</option>
+														<option value="100">100</option>
+														<option value="200">200</option>
+												    </select>
+												</th>
+												<th></th>
 											</tr>
 										</thead>
 										<tbody>
-										{
-											listFeedback.map((data, index) => {
-												return (
-													<tr key={index}>
-														<td>{index + 1}</td>
-														<td>{data.account_name}</td>
-														<td>{data.name}</td>
-														<td>{data.phone}</td>
-														<td>{data.address}</td>
-														<td>{data.feedback_content}</td>
-														<td>{data.feedback_type}&nbsp;<i className="fa fa-star-o" aria-hidden="true"></i> </td>
-														<td><a href="!#" role="button" onClick={() => this.onDelete(data)}><i className="fa fa-trash-o fa-lg" aria-hidden="true"></i> </a></td>
-													</tr>
-												);
-											})
-										}
+											<tr>
+												<td>
+													<textarea name="queryValue" id="queryValue" cols="50" rows="5" onChange={this.onChange}></textarea>
+												</td>
+											</tr>
+											<tr>
+												<td align="Center">
+													<input type="button" name="reset" id="reset" value="Reset"></input>&nbsp;&nbsp;
+													<input onClick={this.submitQuery} type="button" name="submit" id="submit" value="Submit"></input>
+												</td>
+											</tr>	
 										</tbody>
+
+										{/*Result executequery*/}
+										<table id="resultTable" className="table table-bordred">
+											<thead className="thead-light">
+												<tr>
+												{
+													listKeyName.map((data, index) => {
+														return (
+															<th key={index}>{data}</th>
+														);
+													})
+												}
+												</tr>
+											</thead>
+											<tbody>
+											{
+												listResult.map((data, index) => {
+													return (
+														<tr key={index}>
+														{
+															listKeyName.map((keyName, i) =>
+																<td>{data[keyName]}</td>
+															)
+														}
+														</tr>
+													);
+												})
+											}
+											</tbody>
+										</table>
+
 									</table>
 				        		</div>
 	        				</div>
@@ -288,4 +288,4 @@ class FeedbackPage extends Component {
 		);
 	}
 }
-export default FeedbackPage;
+export default ToolQueryPage;

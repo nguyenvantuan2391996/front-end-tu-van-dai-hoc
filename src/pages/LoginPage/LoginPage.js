@@ -109,6 +109,10 @@ class LoginPage extends Component {
         this.setState({
           role : res.data.role
         });
+      }).catch(err => {
+        if (err.response.status === 404) {
+          console.log(err.response.data.message);
+        }
       });
     }
   }

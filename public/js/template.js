@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  //Click sendFeedback
   $("#sendFeedback").click(function(){
     setTimeout(function(){
       $("#feedback .close").click()
@@ -7,7 +8,8 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-  $("#editAccount").click(function(){
+  // Click saveAccount
+  $("#saveAccount").click(function(){
     setTimeout(function(){
       $("#editAccount .close").click()
     }, 1000);

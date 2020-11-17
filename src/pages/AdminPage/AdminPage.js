@@ -25,10 +25,138 @@ class AdminPage extends Component {
 		});
 	}
 
-	onGetAccountEdit = (e) => {
+	onUpdate = (data) => {
+		this.setState({
+			accountID : data.id
+		});
+		this.setState({
+			name : data.name
+		});
+		this.setState({
+			status : data.status
+		});
+	}
+
+	onDelete = (data) => {
+		swal({
+			title: "Are you sure ?",
+			text: "Account will be deleted !",
+			icon: "warning",
+			buttons: true,
+			dangerMode: true,
+		})
+		.then((willDelete) => {
+			if (willDelete) {
+
+				axios({
+					method: 'DELETE',
+					url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account',
+					data: {
+						id : data.id
+					},
+					headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
+				}).then(res => {
+					swal("Delete success!", {
+						icon: "success",
+						timer: 2000
+					});
+					this.getAccount();
+				}).catch(err => {
+					if (err.response.status === 404) {
+						swal("Fail !", err.response.data.message + " !", "error");
+					}
+					else if (err.response.status === 401) {
+						axios({
+							method: 'POST',
+							url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/login/refreshToken',
+							data: {
+								refresh_token: localStorage.getItem('refresh_token'),
+								token: localStorage.getItem('access_token')
+							}
+						}).then(res => {
+							localStorage.setItem('access_token', res.data.access_token);
+							localStorage.setItem('refresh_token', res.data.refresh_token);
+
+							axios({
+								method: 'DELETE',
+								url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account',
+								data: {
+									id : data.id
+								},
+								headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
+							}).then(res => {
+								swal("Delete success!", {
+									icon: "success",
+									timer: 2000
+								});
+								this.getAccount();
+							}).catch(err => {
+								this.setState({
+									message : "signout"
+								});
+							});
+						});
+					}
+				});
+			}
+		});
+	}
+
+	onSaveUpdate = (e) => {
 		e.preventDefault();
 		var {accountID, status} = this.state;
-		console.log(this.state);
+		axios({
+			method: 'PUT',
+			url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account',
+			data: {
+				id : accountID,
+				status : status
+			},
+			headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
+		}).then(res => {
+			swal("Update success!", {
+				icon: "success",
+				timer: 2000
+			});
+			this.getAccount();
+		}).catch(err => {
+			if (err.response.status === 404) {
+				swal("Fail !", "Update Fail !", "error");
+			}
+			else if (err.response.status === 401) {
+				axios({
+					method: 'POST',
+					url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/login/refreshToken',
+					data: {
+						refresh_token: localStorage.getItem('refresh_token'),
+						token: localStorage.getItem('access_token')
+					}
+				}).then(res => {
+					localStorage.setItem('access_token', res.data.access_token);
+					localStorage.setItem('refresh_token', res.data.refresh_token);
+
+					axios({
+						method: 'PUT',
+						url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account',
+						data: {
+							id : accountID,
+							status : status
+						},
+						headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
+					}).then(res => {
+						swal("Update success!", {
+							icon: "success",
+							timer: 2000
+						});
+						this.getAccount();
+					}).catch(err => {
+						this.setState({
+							message : "signout"
+						});
+					});
+				});
+			}
+		});
 	}
 
 	onSignOut = (e) => {
@@ -56,7 +184,9 @@ class AdminPage extends Component {
 					this.setState({
 						role : localStorage.getItem('role')
 					});
+
 					localStorage.clear();
+
 					swal("Sign out success!", {
 						icon: "success",
 						timer: 2000
@@ -71,7 +201,7 @@ class AdminPage extends Component {
 	getAccount () {
 		axios({
 			method: 'POST',
-			url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account/getaccouts',
+			url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account/getaccounts',
 			data: {
 			},
 			headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
@@ -97,7 +227,7 @@ class AdminPage extends Component {
 
 					axios({
 						method: 'POST',
-						url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account/getaccouts',
+						url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account/getaccounts',
 						data: {
 						},
 						headers: { Authorization: "Bearer " + localStorage.getItem('access_token')}
@@ -143,7 +273,7 @@ class AdminPage extends Component {
 	}
 
 	render() {
-		var {accountID, name, status, listAccount, message, role} = this.state;
+		var {name, status, listAccount, message, role} = this.state;
 
 		if (message === "signout" || role !== "1") {
 			return <Redirect to="/" />
@@ -181,9 +311,9 @@ class AdminPage extends Component {
 		            </div>
 		            <ul className="wraplist" style={{height: 'auto'}}>	
 		              <li><a href="/admin"><span className="sidebar-icon"><i className="fa fa-address-card-o" /></span> <span className="menu-title">Manage Account</span></a></li>
-		              <li><a href='/managefeedback'><span className="sidebar-icon"><i className="fa fa-rss" /></span> <span className="menu-title">Manage Feedback</span></a></li>
-		              <li><a href="/toolquery"><span className="sidebar-icon"><i className="fa fa-windows" /></span> <span className="menu-title">Tool Query</span></a></li>
-		              <li><a href="" role="button" onClick={this.onSignOut}><span className="sidebar-icon"><i className="fa fa-lock" /></span> <span className="menu-title">Sign Out</span></a></li>
+		              <li><a href='/feedback'><span className="sidebar-icon"><i className="fa fa-rss" /></span> <span className="menu-title">Manage Feedback</span></a></li>
+		              <li><a href="/query"><span className="sidebar-icon"><i className="fa fa-windows" /></span> <span className="menu-title">Tool Query</span></a></li>
+		              <li><a href="!#" role="button" onClick={this.onSignOut}><span className="sidebar-icon"><i className="fa fa-lock" /></span> <span className="menu-title">Sign Out</span></a></li>
 		            </ul>
 		          </div>
 		        </div>
@@ -204,6 +334,7 @@ class AdminPage extends Component {
 												<th>Role</th>
 												<th>Status</th>
 												<th>Edit</th>
+												<th>Delete</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -213,12 +344,13 @@ class AdminPage extends Component {
 													<tr key={index}>
 														<td>{index + 1}</td>
 														<td>{data.accountName}</td>
-														<td><a name="accountID" value={data.name} onChange={this.onChange}></a>{data.name}</td>
+														<td>{data.name}</td>
 														<td>{data.phone}</td>
 														<td>{data.address}</td>
-														<td>{data.role ? 'Admin' : 'User'}</td>
-														<td>{data.status ? 'Active' : 'Locked'}</td>
-														<td><a role="button" name="accountID" value={data.id} data-title="editAccount" data-toggle="modal" data-target="#editAccount" onClick={this.onGetAccountEdit}><i className="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></a></td>
+														<td>{data.role === "1" ? 'Admin' : 'User'}</td>
+														<td>{data.status === "1" ? 'Active' : 'Locked'}</td>
+														<td><a href="!#" role="button" data-title="editAccount" data-toggle="modal" data-target="#editAccount" onClick={() => this.onUpdate(data)}><i className="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> </a></td>
+														<td><a href="!#" role="button" onClick={() => this.onDelete(data)}><i className="fa fa-trash-o fa-lg" aria-hidden="true"></i> </a></td>
 													</tr>
 												);
 											})
@@ -232,12 +364,12 @@ class AdminPage extends Component {
 		        </section>
 
 		        {/*Model feedback*/}
-		        <form onSubmit={this.onEditAccount}>
+		        <form onSubmit={this.onSaveUpdate}>
 			        <div className="modal fade" id="editAccount" tabIndex={-1} role="dialog" aria-hidden="true">
 			        	<div className="modal-dialog">
 			        		<div className="modal-content">
 			        			<div className="modal-header">
-			        				<h5 className="modal-title">Edit account + {name}</h5>
+			        				<h5 className="modal-title">Edit account {name}</h5>
 				        			<button type="button"  className="close" data-dismiss="modal" aria-label="Close">
 				        				<span aria-hidden="true">&times;</span>
 				        			</button>
@@ -249,15 +381,15 @@ class AdminPage extends Component {
 			        					<div className="col-md-6">
 				        					<div className="form-group">
 				        						<select required="required" className="form-control" name="status" value={status} onChange={this.onChange} >
-					                                <option value="1" >Active</option>
-					                                <option value="0" >Locked</option>
+					                                <option value="1">Active</option>
+					                                <option value="0">Locked</option>
 			                              		</select>
 				        					</div>
 			        					</div>
 			        				</div>
 			        			</div>
 			        			<div className="modal-footer ">
-			        				<button type="submit" className="btn" id="editAccount" ><i className="fa fa-floppy-o"></i> Save</button>
+			        				<button type="submit" className="btn" id="saveAccount" ><i className="fa fa-floppy-o"></i> Save</button>
 			        			</div>
 			        		</div>
 			        	</div>

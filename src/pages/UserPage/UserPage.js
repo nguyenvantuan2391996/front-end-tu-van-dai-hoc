@@ -45,6 +45,10 @@ class UserPage extends Component {
 			this.setState({
 				resultDss : res.data
 			});
+			swal(res.data.length + " best university majors suggested for you !", {
+				icon: "success",
+				timer: 2000
+			});
 		}).catch(err => {
 			if (err.response.status === 404) {
 				swal("Fail !", err.response.data.message + " !", "error");
@@ -168,7 +172,7 @@ class UserPage extends Component {
 	}
 
 	render() {
-		var {rating, feedbackContent, resultDss, message, role, yourScore, location, examGroup, majorGroup} = this.state;
+		var {feedbackContent, resultDss, message, role, yourScore, examGroup, location, majorGroup} = this.state;
 
 		if (message === "signout" || role !== "0") {
 			return <Redirect to="/" />
@@ -206,9 +210,9 @@ class UserPage extends Component {
 		            </div>
 		            <ul className="wraplist" style={{height: 'auto'}}>	
 		              <li><a href="/user"><span className="sidebar-icon"><i className="fa fa-search" /></span> <span className="menu-title">Consulting Majors</span></a></li>
-		              <li><a href="/comment"><span className="sidebar-icon"><i className="fa fa-comment-o" /></span> <span className="menu-title">Comment</span></a></li>
-		              <li><a role="button" data-title="feedback" data-toggle="modal" data-target="#feedback"><span className="sidebar-icon"><i className="fa fa-rss" /></span> <span className="menu-title">Feedback</span></a></li>
-		              <li><a href="" role="button" onClick={this.onSignOut}><span className="sidebar-icon"><i className="fa fa-lock" /></span> <span className="menu-title">Sign Out</span></a></li>
+		              <li><a href="/message"><span className="sidebar-icon"><i className="fa fa-comment-o" /></span> <span className="menu-title">Message</span></a></li>
+		              <li><a href="!#" role="button" data-title="feedback" data-toggle="modal" data-target="#feedback"><span className="sidebar-icon"><i className="fa fa-rss" /></span> <span className="menu-title">Feedback</span></a></li>
+		              <li><a href="!#" role="button" onClick={this.onSignOut}><span className="sidebar-icon"><i className="fa fa-lock" /></span> <span className="menu-title">Sign Out</span></a></li>
 		            </ul>
 		          </div>
 		        </div>							
@@ -219,13 +223,13 @@ class UserPage extends Component {
 		        		<div className="row">
 		        				<div className="col-md-2">
 			        				<div className="form-group">
-		                              <input type="number" min="0" max="30" className="form-control" placeholder="Your Score *" name="yourScore" value={yourScore} onChange={this.onChange} required="required" />
+		                              <input type="number" min="0" max="30" step="0.1" className="form-control" placeholder="Your Score *" name="yourScore" value={yourScore} onChange={this.onChange} required="required" />
 		                            </div>
 			        			</div>
 
 			        			<div className="col-md-2">
 			        				<div className="form-group">
-	                              		<select required className="form-control" name="location" value={location} onChange={this.onChange} >
+	                              		<select value="Trung" required className="form-control" name="location" value={location} onChange={this.onChange} >
 			                                <option className="hidden" defaultValue>Location *</option>
 			                                <option value="all">All</option>
 			                                <option value="Bắc">Bắc</option>
@@ -273,6 +277,7 @@ class UserPage extends Component {
 														<th>Exam Group</th>
 														<th>Majors Group Name</th>
 														<th>Benchmarks 2019</th>
+														<th>Benchmarks 2020</th>
 														<th>Location</th>
 														<th>Link Website</th>
 													</tr>
@@ -288,6 +293,7 @@ class UserPage extends Component {
 																<td>{data.examGroup}</td>
 																<td>{data.majorsGroupName}</td>
 																<td>{data.benchmarks2019}</td>
+																<td>{data.benchmarks2020}</td>
 																<td>{data.location}</td>
 																<td><a target="_blank" href="data.linkWebsite">{data.linkWebsite}</a></td>
 															</tr>
@@ -321,11 +327,11 @@ class UserPage extends Component {
 			        					</div>
 			        					<div className="col-md-2">
 			        						<span className="star-rating">
-											  <input type="radio" required name="rating" value={rating} onChange={this.onChange} value="1"/><i></i>
-											  <input type="radio" required name="rating" value={rating} onChange={this.onChange} value="2"/><i></i>
-											  <input type="radio" required name="rating" value={rating} onChange={this.onChange} value="3"/><i></i>
-											  <input type="radio" required name="rating" value={rating} onChange={this.onChange} value="4"/><i></i>
-											  <input type="radio" required name="rating" value={rating} onChange={this.onChange} value="5"/><i></i>
+											  <input type="radio" required name="rating" onChange={this.onChange} value="1"/><i></i>
+											  <input type="radio" required name="rating" onChange={this.onChange} value="2"/><i></i>
+											  <input type="radio" required name="rating" onChange={this.onChange} value="3"/><i></i>
+											  <input type="radio" required name="rating" onChange={this.onChange} value="4"/><i></i>
+											  <input type="radio" required name="rating" onChange={this.onChange} value="5"/><i></i>
 											</span>
 			        					</div>
 			        				</div>

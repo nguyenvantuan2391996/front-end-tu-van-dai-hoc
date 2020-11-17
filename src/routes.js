@@ -3,8 +3,9 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import UserPage from './pages/UserPage/UserPage';
 import AdminPage from './pages/AdminPage/AdminPage';
-import CommentPage from './pages/CommentPage/CommentPage';
+import MessagePage from './pages/MessagePage/MessagePage';
 import FeedbackPage from './pages/FeedbackPage/FeedbackPage';
+import ToolQueryPage from './pages/ToolQueryPage/ToolQueryPage';
 
 const routes = [
 	{
@@ -23,14 +24,19 @@ const routes = [
 		main: () => <AdminPage />
 	},
 	{
-		path : '/comment',
+		path : '/message',
 		exact : true,
-		main: () => <CommentPage />
+		main: () => <MessagePage />
 	},
 	{
 		path : '/feedback',
 		exact : true,
 		main: () => <FeedbackPage />
+	},
+	{
+		path : '/query',
+		exact : true,
+		main: () => <ToolQueryPage />
 	},
 	{
 		path : '',
