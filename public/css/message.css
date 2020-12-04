@@ -1,3 +1,4 @@
+
 .container{max-width:1379px; margin:auto;}
 img{ max-width:100%;}
 .inbox_people {
@@ -14,11 +15,14 @@ img{ max-width:100%;}
 .top_spac{ margin: 20px 0 0;}
 
 
-.recent_heading {float: left; width:40%;}
+.recent_heading {float: left; width:30%;}
 .srch_bar {
   display: inline-block;
   text-align: right;
-  width: 60%; padding:
+  width: 20%;
+  position: absolute;
+  left : 8%;
+  z-index:2;
 }
 .headind_srch{ padding:10px 29px 10px 20px; overflow:hidden; border-bottom:1px solid #c4c4c4;}
 
@@ -54,23 +58,24 @@ img{ max-width:100%;}
 .chat_list {
   border-bottom: 1px solid #c4c4c4;
   margin: 0;
-  padding: 18px 16px 10px;
+  padding: 20px 16px 10px;
+  z-index: 1;
 }
-.inbox_chat { height: 550px; overflow-y: scroll;}
+.inbox_chat { height: 550px; overflow-y: scroll; z-index: -1000;}
 
 .active_chat{ background:#ebebeb;}
 
 .incoming_msg_img {
   display: inline-block;
-  width: 6%;
+  width: 4%;
 }
 .received_msg {
   display: inline-block;
   padding: 0 0 0 10px;
   vertical-align: top;
   width: 92%;
- }
- .received_withd_msg p {
+}
+.received_withd_msg p {
   background: #ebebeb none repeat scroll 0 0;
   border-radius: 3px;
   color: #646464;
@@ -92,7 +97,7 @@ img{ max-width:100%;}
   width: 70%;
 }
 
- .sent_msg p {
+.sent_msg p {
   background: #05728f none repeat scroll 0 0;
   border-radius: 3px;
   font-size: 14px;
@@ -141,25 +146,32 @@ img{ max-width:100%;}
 
 .img_cont{
   position: relative;
-  height: 60px;
-  width: 60px;
+  height: 35px;
+  width: 35px;
   margin-left: 15px;
 }
 
 .user_info{
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-left: 15px;
-  }
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 15px;
+}
 
 .video_cam{
-    margin-left: 50px;
-    margin-top: 5px;
-  }
+  margin-left: 50px;
+  margin-top: 5px;
+}
 
 .video_cam span{
-    color: #3366FF;
-    font-size: 28px;
-    cursor: pointer;
-    margin-right: 20px;
-  }
+  color: #3366FF;
+  font-size: 28px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.avatar {
+  vertical-align: middle;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import swal from 'sweetalert';
+import {storage} from '../firebase';
 
 class LoginPage extends Component {
   
@@ -18,7 +19,10 @@ class LoginPage extends Component {
       address : '',
       phone : '',
       language : '',
-      role : ''
+      role : '',
+      fileImagePreview : './image/default_icon.jpg',
+      fileImageUpload :'',
+      image_url : ''
     };
   }
 
@@ -29,6 +33,23 @@ class LoginPage extends Component {
     this.setState({
       [name]: value
     });
+  }
+
+  imageChange = (e) => {
+    const fileImageUpload = e.target.files[0];
+    this.setState({
+      fileImageUpload : fileImageUpload
+    });
+    const allow_file = ["image/png", "image/jpeg", "image/jpg"];
+    if (fileImageUpload && allow_file.includes(fileImageUpload.type)) {
+      let reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState({
+          fileImagePreview : reader.result
+        });
+      }
+      reader.readAsDataURL(fileImageUpload);
+    }
   }
 
   onLogin = (e) => {
@@ -53,6 +74,7 @@ class LoginPage extends Component {
         localStorage.setItem('language_id', res.data.languageId);
         localStorage.setItem('name', res.data.name);
         localStorage.setItem('address', res.data.address);
+        localStorage.setItem('image_url', res.data.image_url);
 
         this.setState({
           access_token : res.data.access_token
@@ -71,25 +93,43 @@ class LoginPage extends Component {
 
   onRegister = (e) => {
     e.preventDefault();
-    var {firstName, lastName, passwordRegister, confirmPasswordRegister, accountNameRegister, address, phone, language} = this.state;
-    if (passwordRegister === confirmPasswordRegister) {
-      axios({
-        method: 'POST',
-        url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account',
-        data: {
-          account_name: accountNameRegister,
-          password: passwordRegister,
-          name : firstName + " " + lastName,
-          phone : phone,
-          address : address,
-          status : "1",
-          language_id : language
-        }
+    var {fileImageUpload, firstName, lastName, passwordRegister, confirmPasswordRegister, accountNameRegister, address, phone, language} = this.state;
 
-      }).then(res => {
-        swal("Success !", "Account is registered successfully !", "success");
-      }).catch(err => {
-        swal("Fail !", err.response.data.message + " !", "error");
+    if (passwordRegister === confirmPasswordRegister) {
+      // Upload image to firebase
+      const uploadTask = storage.ref('image/' + accountNameRegister + fileImageUpload.name).put(fileImageUpload);
+      uploadTask.on('state_changed', 
+        (snapshot) => {
+        // progrss function ....
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+      }, 
+      (error) => {
+           // error function ....
+           console.log(error);
+         }, 
+         () => {
+        // get url image from firebase
+        storage.ref('image').child(accountNameRegister + fileImageUpload.name).getDownloadURL().then(url => {
+          // Call API create account
+          axios({
+            method: 'POST',
+            url: 'http://nguyenvantuan239-001-site1.itempurl.com/api/account',
+            data: {
+              account_name: accountNameRegister,
+              password: passwordRegister,
+              name : firstName + " " + lastName,
+              phone : phone,
+              address : address,
+              status : "1",
+              language_id : language,
+              image_url : url
+            }
+          }).then(res => {
+            swal("Success !", "Account is registered successfully !", "success");
+          }).catch(err => {
+            swal("Fail !", err.response.data.message + " !", "error");
+          });
+        })
       });
     } else {
       swal("Fail !", "Password isn't as same as confirm password !", "error");
@@ -118,7 +158,7 @@ class LoginPage extends Component {
   }
 
   render() {
-      var {account_name, password, role, firstName, lastName, passwordRegister, confirmPasswordRegister, accountNameRegister, address, phone, language} = this.state;
+      var {account_name, password, role, firstName, lastName, passwordRegister, confirmPasswordRegister, accountNameRegister, address, phone, language, fileImagePreview} = this.state;
 
       if (role === "0") {
         return <Redirect to="/user" />
@@ -175,7 +215,7 @@ class LoginPage extends Component {
                     <h3 className="register-heading">Register account</h3>
                     <form onSubmit={this.onRegister}>
                       <div className="row register-form">
-                          <div className="col-md-6">
+                          <div className="col-md-4">
                             <div className="form-group">
                               <input type="text" className="form-control" placeholder="First Name *" name="firstName" value={firstName} onChange={this.onChange} required="required" />
                             </div>
@@ -189,7 +229,7 @@ class LoginPage extends Component {
                               <input type="password" className="form-control" placeholder="Confirm Password *" name="confirmPasswordRegister" value={confirmPasswordRegister} onChange={this.onChange} required="required" />
                             </div>
                           </div>
-                          <div className="col-md-6">
+                          <div className="col-md-4">
                             <div className="form-group">
                               <input type="text" className="form-control" placeholder="Account name *" name="accountNameRegister" value={accountNameRegister} onChange={this.onChange} required="required" />
                             </div>
@@ -207,6 +247,13 @@ class LoginPage extends Component {
                               </select>
                             </div>
                             <input type="submit" className="btnRegister" value="Register" />
+                          </div>
+                          <div className="col-md-4">
+                            <img className="preview-img" src={fileImagePreview} alt="Preview Image" width="200" height="200"/>
+                            <div className="browse-button">
+                                <i className="fa fa-pencil-alt"></i>
+                                <input className="browse-input" type="file" onChange={this.imageChange} required name="fileImage" id="fileImage" />
+                            </div>
                           </div>
                       </div>
                     </form>

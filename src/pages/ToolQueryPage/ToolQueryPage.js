@@ -161,6 +161,7 @@ class ToolQueryPage extends Component {
 				this.setState({
 					role : res.data.role
 				});
+				localStorage.setItem('id', res.data.user_id);
 			}).catch(err => {
 				this.setState({
 					message : "signout"

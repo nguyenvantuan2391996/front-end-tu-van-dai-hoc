@@ -159,6 +159,8 @@ class UserPage extends Component {
 				this.setState({
 					role : res.data.role
 				});
+
+				localStorage.setItem('id', res.data.user_id);
 			}).catch(err => {
 				this.setState({
 					message : "signout"
@@ -188,7 +190,7 @@ class UserPage extends Component {
 		            <ul className="pull-right info-menu user-info">
 		              <li className="profile">
 		                <a href="/user" role="button">
-		                  <img alt="avatar" src="https://pickaface.net/gallery/avatar/unr_randomavatar_170412_0236_9n4c2i.png" className="img-circle img-inline" />
+		                  <img alt="avatar" src={localStorage.getItem('image_url')} className="img-circle img-inline avatar" />
 		                  <span>{localStorage.getItem('name')}</span>
 		                </a>
 		              </li>
@@ -199,7 +201,7 @@ class UserPage extends Component {
 		          <div className="sidebar-inner" id="main-menu-wrapper">
 		            <div className="profile-info row ">
 		              <div className="profile-image ">
-		                <img alt="avatar" src="https://pickaface.net/gallery/avatar/unr_randomavatar_170412_0236_9n4c2i.png" className="img-circle img-inline" />
+		                <img alt="avatar" src={localStorage.getItem('image_url')} className="img-circle img-inline avatar" />
 		              </div>
 		              <div className="profile-details">
 		                <h3>
@@ -229,7 +231,7 @@ class UserPage extends Component {
 
 			        			<div className="col-md-2">
 			        				<div className="form-group">
-	                              		<select value="Trung" required className="form-control" name="location" value={location} onChange={this.onChange} >
+	                              		<select required className="form-control" name="location" value={location} onChange={this.onChange} >
 			                                <option className="hidden" defaultValue>Location *</option>
 			                                <option value="all">All</option>
 			                                <option value="Bắc">Bắc</option>

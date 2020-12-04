@@ -260,6 +260,7 @@ class AdminPage extends Component {
 				this.setState({
 					role : res.data.role
 				});
+				localStorage.setItem('id', res.data.user_id);
 			}).catch(err => {
 				this.setState({
 					message : "signout"
@@ -289,7 +290,7 @@ class AdminPage extends Component {
 		            <ul className="pull-right info-menu user-info">
 		              <li className="profile">
 		                <a href="/user" role="button">
-		                  <img alt="avatar" src="https://pickaface.net/gallery/avatar/unr_randomavatar_170412_0236_9n4c2i.png" className="img-circle img-inline" />
+		                  <img alt="avatar" src={localStorage.getItem('image_url')} className="img-circle img-inline avatar" />
 		                  <span>{localStorage.getItem('name')}</span>
 		                </a>
 		              </li>
@@ -300,7 +301,7 @@ class AdminPage extends Component {
 		          <div className="sidebar-inner" id="main-menu-wrapper">
 		            <div className="profile-info row ">
 		              <div className="profile-image ">
-		                <img alt="avatar" src="https://pickaface.net/gallery/avatar/unr_randomavatar_170412_0236_9n4c2i.png" className="img-circle img-inline" />
+		                <img alt="avatar" src={localStorage.getItem('image_url')} className="img-circle img-inline avatar" />
 		              </div>
 		              <div className="profile-details">
 		                <h3>
@@ -350,7 +351,7 @@ class AdminPage extends Component {
 														<td>{data.role === "1" ? 'Admin' : 'User'}</td>
 														<td>{data.status === "1" ? 'Active' : 'Locked'}</td>
 														<td><a href="!#" role="button" data-title="editAccount" data-toggle="modal" data-target="#editAccount" onClick={() => this.onUpdate(data)}><i className="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> </a></td>
-														<td><a href="!#" role="button" onClick={() => this.onDelete(data)}><i className="fa fa-trash-o fa-lg" aria-hidden="true"></i> </a></td>
+														<td><a role="button" onClick={() => this.onDelete(data)}><i className="fa fa-trash-o fa-lg" aria-hidden="true"></i> </a></td>
 													</tr>
 												);
 											})
